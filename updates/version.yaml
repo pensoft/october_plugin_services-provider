@@ -1,0 +1,14 @@
+1.0.1: First version of ServicesProvider
+1.0.2:
+    - 'Set additional data for rainlab.user.getNotificationVars event'
+1.0.3:
+    - 'AWS retrieve file from s3'
+1.0.4:
+    - 'composer json file'
+1.0.5:
+    - 'fix empty image path'
+1.0.6:
+    - 'Added gitignore'
+
+4.0.1:
+    - 'Migrated to OctoberCMS 4 and PHP 8.2'

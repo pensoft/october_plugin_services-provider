@@ -1,7 +1,6 @@
 <?php namespace Pensoft\ServicesProvider;
 
 use Backend;
-use System\Classes\MarkupManager;
 use System\Classes\PluginBase;
 use Event;
 use Illuminate\Support\Facades\Storage;
@@ -40,20 +39,10 @@ class Plugin extends PluginBase
                     return implode("\n", array_map(fn($line) => $indent . $line, $lines));
                 },
             ],
-        ];
-    }
-
-    public function boot(): void
-    {
-        Event::listen('rainlab.user.getNotificationVars', function ($user): array {
-            $code = implode('!', [$user->id, $user->persist_code ?? hash('sha256', $user->email . $user->id)]);
-            $link = url('/profile') . '?activate=' . $code . '&code=' . $code;
-
-            return ['link' => $link, 'surname' => $user->surname];
-        });
-
-        MarkupManager::instance()->registerCallback(function ($manager): void {
-            $manager->registerFunctions([
+            // Here, not in a MarkupManager::registerCallback(): on October 4
+            // that registers at once, and MarkupManager then never loads the
+            // registerMarkupTags() of the modules and the other plugins.
+            'functions' => [
                 'getAWSFile' => function ($path): string|false {
                     if ($path) {
                         $removeStr = 'https://s3-' . env('AWS_REGION') . '.amazonaws.com/' . env('AWS_BUCKET') . '/';
@@ -71,7 +60,17 @@ class Plugin extends PluginBase
                     }
                     return false;
                 },
-            ]);
+            ],
+        ];
+    }
+
+    public function boot(): void
+    {
+        Event::listen('rainlab.user.getNotificationVars', function ($user): array {
+            $code = implode('!', [$user->id, $user->persist_code ?? hash('sha256', $user->email . $user->id)]);
+            $link = url('/profile') . '?activate=' . $code . '&code=' . $code;
+
+            return ['link' => $link, 'surname' => $user->surname];
         });
     }
 
